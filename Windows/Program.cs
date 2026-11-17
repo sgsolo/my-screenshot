@@ -100,6 +100,7 @@ internal sealed class ScreenshotApp : ApplicationContext
     private SelectionWindow? selection;
     private CapturePreview? preview;
     private RecordingSession? recording;
+    private Task? recordingFinished;
     private RecordingShade? shade;
     private string? lastFile;
     private bool stopping;
@@ -170,6 +171,7 @@ internal sealed class ScreenshotApp : ApplicationContext
     private void Capture(bool video, bool area) => Run(() =>
     {
         if (selection is not null || quitting || video && recording is not null) return;
+        menu.Close();
         ClosePreview();
         var bounds = Screen.FromPoint(Cursor.Position).Bounds;
         if (!area && video) { StartRecording(bounds, bounds); return; }
@@ -220,7 +222,7 @@ internal sealed class ScreenshotApp : ApplicationContext
             recording = new RecordingSession(path, region, screen);
             tray.Icon = recordingIcon;
             tray.Text = "Мой Скриншот — запись экрана";
-            _ = ObserveRecording(recording);
+            recordingFinished = ObserveRecording(recording);
         }
         catch
         {
@@ -259,8 +261,7 @@ internal sealed class ScreenshotApp : ApplicationContext
             stopping = true;
             session.Stop();
         }
-        try { await session.Completion; }
-        catch { /* ObserveRecording reports the failure. */ }
+        if (recordingFinished is { } finished) await finished;
     }
 
     private void ShowPreview(string path, Bitmap image, Rectangle screen, bool copied)
