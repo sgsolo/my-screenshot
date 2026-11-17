@@ -1,0 +1,15 @@
+"capture.save" = "Сохранить";
+"preview.clipboard.title" = "Скопировано в буфер обмена";
+"preview.clipboard.detail" = "⌘V — вставить";
+"preview.drag.title" = "Перетащите миниатюру";
+"preview.drag.detail" = "В чат или другое приложение";
+"storage.guide" = "Папку для снимков и видео можно выбрать в настройках.";
+"storage.settings.menu" = "Настройки…";
+"storage.settings.title" = "Настройки";
+"storage.folder.title" = "Папка для снимков и видео";
+"storage.folder.open" = "Открыть папку сохранения";
+"storage.folder.choose" = "Выбрать папку…";
+"storage.folder.confirm" = "Выбрать";
+"storage.folder.reset" = "По умолчанию";
+"storage.folder.unavailable" = "Папка сохранения недоступна.";
+"storage.format.menu" = "Формат снимков";

@@ -1,0 +1,15 @@
+"capture.save" = "Save";
+"preview.clipboard.title" = "Copied to Clipboard";
+"preview.clipboard.detail" = "⌘V to paste";
+"preview.drag.title" = "Drag the thumbnail";
+"preview.drag.detail" = "Drop it into a chat or another app";
+"storage.guide" = "Choose where screenshots and recordings are saved in Settings.";
+"storage.settings.menu" = "Settings…";
+"storage.settings.title" = "Settings";
+"storage.folder.title" = "Folder for Screenshots and Recordings";
+"storage.folder.open" = "Open Save Folder";
+"storage.folder.choose" = "Choose Folder…";
+"storage.folder.confirm" = "Choose";
+"storage.folder.reset" = "Use Default";
+"storage.folder.unavailable" = "The save folder is unavailable.";
+"storage.format.menu" = "Screenshot Format";
