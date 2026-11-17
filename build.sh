@@ -21,7 +21,12 @@ xcrun lipo -create "$stage/MyScreenshot-arm64" "$stage/MyScreenshot-x86_64" \
     -output "$bundle/Contents/MacOS/MyScreenshot"
 xcrun swift "$project_dir/Sources/icon.swift" "$iconset"
 iconutil -c icns "$iconset" -o "$bundle/Contents/Resources/AppIcon.icns"
-codesign --force --sign - "$bundle"
+signing_identity="${MYSCREENSHOT_SIGNING_IDENTITY:--}"
+if [[ "$signing_identity" == "-" ]]; then
+    codesign --force --sign - "$bundle"
+else
+    codesign --force --options runtime --timestamp --sign "$signing_identity" "$bundle"
+fi
 codesign --verify --strict "$bundle"
 rm -rf "$build_dir/$app_name"
 mv "$bundle" "$build_dir/$app_name"
