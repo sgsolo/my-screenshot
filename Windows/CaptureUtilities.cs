@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -14,7 +15,7 @@ internal static class CaptureUtilities
         try
         {
             using var graphics = Graphics.FromImage(image);
-            graphics.CopyFromScreen(region.Location, Point.Empty, region.Size, CopyPixelOperation.SourceCopy | CopyPixelOperation.CaptureBlt);
+            Native.CopyDesktop(graphics, region);
             if (showPointer) Native.PaintCursor(graphics, region);
             return image;
         }
@@ -212,7 +213,30 @@ internal static partial class Native
     [DllImport("user32.dll")] private static extern bool GetCursorInfo(ref CursorInfo value);
     [DllImport("user32.dll")] private static extern bool GetIconInfo(nint icon, out IconInfo value);
     [DllImport("user32.dll")] private static extern bool DrawIconEx(nint dc, int x, int y, nint icon, int width, int height, uint step, nint brush, uint flags);
+    [DllImport("user32.dll", SetLastError = true)] private static extern nint GetDC(nint window);
+    [DllImport("user32.dll")] private static extern int ReleaseDC(nint window, nint dc);
+    [DllImport("gdi32.dll", SetLastError = true)] private static extern bool BitBlt(nint destination, int x, int y, int width, int height,
+        nint source, int sourceX, int sourceY, uint operation);
     [DllImport("gdi32.dll")] private static extern bool DeleteObject(nint handle);
+
+    public static void CopyDesktop(Graphics graphics, Rectangle region)
+    {
+        const uint sourceCopy = 0x00CC0020;
+        const uint captureLayeredWindows = 0x40000000;
+        nint desktop = GetDC(0);
+        if (desktop == 0) throw new Win32Exception(Marshal.GetLastWin32Error());
+        try
+        {
+            nint target = graphics.GetHdc();
+            try
+            {
+                if (!BitBlt(target, 0, 0, region.Width, region.Height, desktop, region.X, region.Y, sourceCopy | captureLayeredWindows))
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            finally { graphics.ReleaseHdc(target); }
+        }
+        finally { ReleaseDC(0, desktop); }
+    }
 
     public static void PaintCursor(Graphics graphics, Rectangle region)
     {
